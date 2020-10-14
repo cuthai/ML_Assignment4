@@ -1,7 +1,5 @@
 from utils.args import args
 from etl.etl import ETL
-from decision_tree.id3_classifier import ID3Classifier
-from decision_tree.cart_regressor import CARTRegressor
 
 
 def main():
@@ -27,7 +25,7 @@ def main():
             'prune': arguments.prune
         }
 
-        dt_model = ID3Classifier(**kwargs)
+        dt_model = None
     # Regression
     else:
         # Set up kwargs
@@ -36,7 +34,7 @@ def main():
             'percent_threshold': arguments.percent_threshold
         }
 
-        dt_model = CARTRegressor(**kwargs)
+        dt_model = None
 
         # Tune
         if arguments.tune:

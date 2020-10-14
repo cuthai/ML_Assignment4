@@ -27,7 +27,7 @@ class ETL:
         # Set the attributes to hold our data
         self.data = None
         self.transformed_data = None
-        self.validation_data = None
+        self.tune_data = None
         self.test_split = {}
         self.train_split = {}
 
@@ -36,8 +36,6 @@ class ETL:
         self.random_state = random_state
         self.classes = 0
         self.class_names = None
-        self.feature_names = None
-        self.squared_average_target = 0
 
         # Extract
         self.extract()
@@ -46,10 +44,7 @@ class ETL:
         self.transform()
 
         # Split
-        if self.classes == 0:
-            self.cv_split_regression()
-        else:
-            self.cv_split_classification()
+        self.cv_split_classification()
 
         # Combine Train Sets
         self.cv_combine()
@@ -67,33 +62,35 @@ class ETL:
                             'Normal_Nucleoli', 'Mitoses', 'Class']
             self.data = pd.read_csv('data\\breast-cancer-wisconsin.data', names=column_names)
 
-        # car
-        elif self.data_name == 'car':
-            column_names = ['Buying', 'Maintenance', 'Doors', 'Persons', 'Luggage_Boot', 'Safety', 'Class']
-            self.data = pd.read_csv('data\\car.data', names=column_names)
+        # glass
+        elif self.data_name == 'glass':
+            column_names = ['ID', 'Refractive_Index', 'Sodium', 'Magnesium', 'Aluminum', 'Silicon', 'Potassium',
+                            'Calcium', 'Barium', 'Iron', 'Class']
+            self.data = pd.read_csv('data\\glass.data', names=column_names)
 
-        # segmentation
-        elif self.data_name == 'segmentation':
-            column_names = ['Class', 'Region_Centroid_Col', 'Region_Centroid_Row', 'Region_Pixel_Count',
-                            'Short_Line_Density_5', 'Short_Line_Density_2', 'Vedge_Mean', 'Vedge_SD', 'Hedge_Mean',
-                            'Hedge_SD', 'Intensity_Mean', 'Raw_Red_Mean', 'Raw_Blue_Mean', 'Raw_Green_Mean',
-                            'Ex_Red_Mean', 'Ex_Blue_Mean', 'Ex_Green_Mean', 'Value_Mean', 'Saturation_Mean', 'Hue_Mean']
-            self.data = pd.read_csv('data\\segmentation.data', names=column_names, skiprows=5)
+        # iris
+        elif self.data_name == 'iris':
+            column_names = ['Sepal_Length', 'Sepal_Width', 'Petal_Length', 'Petal_Width', 'Class']
+            self.data = pd.read_csv('data\\iris.data', names=column_names)
 
-        # abalone
-        elif self.data_name == 'abalone':
-            column_names = ['Sex', 'Length', 'Diameter', 'Height', 'Whole_Weight', 'Shucked_Weight', 'Viscera_Weight',
-                            'Shell_Weight', 'Rings']
-            self.data = pd.read_csv('data\\abalone.data', names=column_names)
+        # soybean
+        elif self.data_name == 'soybean':
+            column_names = ['Date', 'Plant_Stand', 'Percip', 'Temp', 'Hail', 'Crop_Hist', 'Area_Damaged', 'Severity',
+                            'Seed_Tmt', 'Germination', 'Plant_Growth', 'Leaves', 'Leaf_Spots_Halo', 'Leaf_Spots_Marg',
+                            'Leaf_Spot_Size', 'Leaf_Shread', 'Leaf_Malf', 'Leaf_Mild', 'Stem', 'Lodging',
+                            'Stem_Cankers', 'Canker_Lesion', 'Fruiting_Bodies', 'External_Decay', 'Mycelium',
+                            'Int_Discolor', 'Sclerotia', 'Fruit_Pods', 'Fruit_Spots', 'Seed', 'Mold_Growth',
+                            'Seed_Discolor', 'Seed_Size', 'Shriveling', 'Roots', 'Class']
+            self.data = pd.read_csv('data\\soybean-small.data', names=column_names)
 
-        # machine
-        elif self.data_name == 'machine':
-            column_names = ['Vendor', 'Model_Name', 'MYCT', 'MMIN', 'MMAX', 'CACH', 'CHMIN', 'CHMAX', 'PRP', 'ERP']
-            self.data = pd.read_csv('data\\machine.data', names=column_names)
-
-        # forest-fires
-        elif self.data_name == 'forest-fires':
-            self.data = pd.read_csv('data\\forestfires.data')
+        # vote
+        elif self.data_name == 'vote':
+            column_names = ['Class', 'Handicapped_Infants', 'Water_Project_Cost_Sharing', 'Adoption_Budget_Resolution',
+                            'Physician_Fee_Freeze', 'El_Salvador_Aid', 'Religious_Groups_School',
+                            'Anti_Satellite_Test_Ban', 'Aid_Nicaraguan_Contras', 'MX_Missile', 'Immigration',
+                            'Synfuels_Corporation_Cutback', 'Education_Spending', 'Superfund_Right_To_Sue', 'Crime',
+                            'Duty_Free_Exports', 'Export_Administration_Act_South_Africa']
+            self.data = pd.read_csv('data\\house-votes-84.data', names=column_names)
 
         # If an incorrect data_name was specified we'll raise an error here
         else:
@@ -110,25 +107,21 @@ class ETL:
         if self.data_name == 'breast-cancer':
             self.transform_breast_cancer()
 
-        # car
-        elif self.data_name == 'car':
-            self.transform_car()
+        # glass
+        elif self.data_name == 'glass':
+            self.transform_glass()
 
-        # segmentation
-        elif self.data_name == 'segmentation':
-            self.transform_segmentation()
+        # iris
+        elif self.data_name == 'iris':
+            self.transform_iris()
 
-        # abalone
-        elif self.data_name == 'abalone':
-            self.transform_abalone()
+        # soybean
+        elif self.data_name == 'soybean':
+            self.transform_soybean()
 
-        # machine
-        elif self.data_name == 'machine':
-            self.transform_machine()
-
-        # forest-fires
-        elif self.data_name == 'forest-fires':
-            self.transform_forest_fires()
+        # vote
+        elif self.data_name == 'vote':
+            self.transform_vote()
 
         # The extract function should catch this but lets throw again in case
         else:
@@ -155,130 +148,38 @@ class ETL:
         # We don't need ID so let's drop that
         temp_df.drop(columns='ID', inplace=True)
 
+        # Normalize Data
+        normalized_temp_df = (temp_df - temp_df.mean()) / temp_df.std()
+
+        # Set the class back, the normalize above would have normalized the class as well
+        normalized_temp_df['Class'] = temp_df['Class']
+
         # Set attributes for ETL object
         self.classes = 2
-        self.transformed_data = temp_df
+        self.transformed_data = normalized_temp_df
 
         # Class and Feature name/type
         self.class_names = temp_df['Class'].unique().tolist()
-        self.feature_names = {feature_name: 'numerical' for feature_name in temp_df.keys()[:-1]}
 
-    def transform_car(self):
+    def transform_glass(self):
         """
-        Function to transform car data set
-
-        No major transformations are made for car
-
-        :return self.transformed_data: DataFrame, transformed data set
-        :return self.classes: int, num of classes
         """
-        # We'll make a deep copy of our data set
-        temp_df = pd.DataFrame.copy(self.data, deep=True)
+        pass
 
-        # Set attributes for ETL object
-        self.classes = 4
-        self.transformed_data = temp_df
-
-        # Class and Feature name/type
-        self.class_names = temp_df['Class'].unique().tolist()
-        self.feature_names = {feature_name: 'categorical' for feature_name in temp_df.keys()[:-1]}
-
-    def transform_segmentation(self):
+    def transform_iris(self):
         """
-        Function to transform segmentation data set
-
-        No major transformations are done for segmentation, the target class variable is ordered to the end
-
-        :return self.transformed_data: DataFrame, transformed data set
-        :return self.classes: int, num of classes
         """
-        # We'll make a deep copy of our data set
-        temp_df = pd.DataFrame.copy(self.data, deep=True)
+        pass
 
-        # Region pixel count is always 9 and is not useful for our algorithms
-        temp_df.drop(columns='Region_Pixel_Count', inplace=True)
-
-        # Let's reorder the class column to the back
-        reordered_temp_df = temp_df.drop(columns='Class')
-        reordered_temp_df['Class'] = temp_df['Class']
-
-        # Set attributes for ETL object
-        self.classes = 7
-        self.transformed_data = reordered_temp_df
-
-        # Class and Feature name/type
-        self.class_names = reordered_temp_df['Class'].unique().tolist()
-        self.feature_names = {feature_name: 'numerical' for feature_name in reordered_temp_df.keys()[:-1]}
-
-    def transform_abalone(self):
+    def transform_soybean(self):
         """
-        Function to transform abalone data set
-
-        No major transformations are done on this data set. The target variable is squared for percent threshold tuning
-
-        :return self.transformed_data: DataFrame, transformed data set
-        :return self.classes: int, num of classes
         """
-        # We'll make a deep copy of our data set
-        temp_df = pd.DataFrame.copy(self.data, deep=True)
+        pass
 
-        # Set attributes for ETL object
-        self.transformed_data = temp_df
-
-        # Feature name/type
-        self.feature_names = {feature_name: 'numerical' for feature_name in temp_df.keys()[:-1]}
-        self.feature_names.update({'Sex': 'categorical'})
-
-        # Squared Average Target for percent_threshold
-        self.squared_average_target = temp_df.iloc[:, -1].mean() ** 2
-
-    def transform_machine(self):
+    def transform_vote(self):
         """
-        Function to transform machine data set
-
-        No major transformations are done on this data set, model_name is a unique ID and is removed. The target
-            variable is squared for percent threshold tuning
-
-        :return self.transformed_data: DataFrame, transformed data set
-        :return self.classes: int, num of classes
         """
-        # We'll make a deep copy of our data set
-        temp_df = pd.DataFrame.copy(self.data, deep=True)
-
-        # We'll remove unneeded variables as well as denormalize the target
-        temp_df.drop(columns=['Model_Name', 'ERP'], inplace=True)
-
-        # Set attributes for ETL object
-        self.transformed_data = temp_df
-
-        # Feature name/type
-        self.feature_names = {feature_name: 'numerical' for feature_name in temp_df.keys()[:-1]}
-        self.feature_names.update({'Vendor': 'categorical'})
-
-        # Squared Average Target for percent_threshold
-        self.squared_average_target = temp_df.iloc[:, -1].mean() ** 2
-
-    def transform_forest_fires(self):
-        """
-        Function to transform forest-fires data set
-
-        No major transformations are done on this data set. The target variable is squared for percent threshold tuning
-
-        :return self.transformed_data: DataFrame, transformed data set
-        :return self.classes: int, num of classes
-        """
-        # We'll make a deep copy of our data set
-        temp_df = pd.DataFrame.copy(self.data, deep=True)
-
-        # Set attributes for ETL object
-        self.transformed_data = temp_df
-
-        # Feature name/type
-        self.feature_names = {feature_name: 'numerical' for feature_name in temp_df.keys()[:-1]}
-        self.feature_names.update({'month': 'categorical', 'day': 'categorical'})
-
-        # Squared Average Target for percent_threshold
-        self.squared_average_target = temp_df.iloc[:, -1].mean() ** 2
+        pass
 
     def cv_split_classification(self):
         """
@@ -305,7 +206,7 @@ class ETL:
         # Randomize a number between 0 and 10 and multiply by the index to randomly pick observations over data set
         for index in range(validation_size):
             validation_splitter.append(np.random.choice(a=10) + (10 * index))
-        self.validation_data = self.transformed_data.iloc[validation_splitter]
+        self.tune_data = self.transformed_data.iloc[validation_splitter]
 
         # Determine the remaining index that weren't picked for validation
         remainder = list(set(self.transformed_data.index) - set(validation_splitter))
@@ -322,53 +223,6 @@ class ETL:
         for index in range(5):
             # Mod the index by 5 and there will be 5 remainder groups for the CV split
             splitter = remainder_df.loc[remainder_df.index % 5 == index]['index']
-
-            # Update our attribute with the dictionary for this index
-            self.test_split.update({
-                index: self.transformed_data.iloc[splitter]
-            })
-
-    def cv_split_regression(self):
-        """
-        Function to split our transformed data into 10% validation and 5 cross validation splits for regression
-
-        First this function splits out a validation set. The remainder is sampled 5 times to produce 5 cv splits.
-
-        :return self.test_split: dict (of DataFrames), dictionary with keys (validation, 0, 1, 2, 3, 4) referring to the
-            split transformed data
-        """
-        # Define base data size and size of validation and splits
-        data_size = len(self.transformed_data)
-        validation_size = int(data_size / 10)
-        cv_size = int((data_size - validation_size) / 5)
-
-        # The extra data will go to the first splits. The remainder of the length divided by 5 defines how many extra
-        extra_data = int((data_size - validation_size) % cv_size)
-
-        # Check and set the random seed
-        if self.random_state:
-            np.random.seed(self.random_state)
-
-        # Sample for validation
-        validation_splitter = np.random.choice(a=data_size, size=validation_size, replace=False)
-        self.validation_data = self.transformed_data.iloc[validation_splitter]
-
-        # Determine the remaining index that weren't picked for validation
-        remainder = list(set(self.transformed_data.index) - set(validation_splitter))
-
-        # CV Split
-        for index in range(5):
-            # For whatever number of extra data, we'll add one to each of those index
-            if (index + 1) <= extra_data:
-                # Sample for the CV size if extra data
-                splitter = np.random.choice(a=remainder, size=(cv_size + 1), replace=False)
-
-            else:
-                # Sample for the CV size
-                splitter = np.random.choice(a=remainder, size=cv_size, replace=False)
-
-            # Define the remaining unsampled data points
-            remainder = list(set(remainder) - set(splitter))
 
             # Update our attribute with the dictionary for this index
             self.test_split.update({
