@@ -158,28 +158,83 @@ class ETL:
         self.classes = 2
         self.transformed_data = normalized_temp_df
 
-        # Class and Feature name/type
+        # Class
         self.class_names = temp_df['Class'].unique().tolist()
 
     def transform_glass(self):
         """
         """
-        pass
+        # We'll make a deep copy of our data set
+        temp_df = pd.DataFrame.copy(self.data, deep=True)
+
+        # We don't need ID so let's drop that
+        temp_df.drop(columns='ID', inplace=True)
+
+        # Normalize Data
+        normalized_temp_df = (temp_df - temp_df.mean()) / temp_df.std()
+
+        # Set the class back, the normalize above would have normalized the class as well
+        normalized_temp_df['Class'] = temp_df['Class']
+
+        # Set attributes for ETL object
+        self.classes = 6
+        self.transformed_data = normalized_temp_df
+
+        # Class
+        self.class_names = temp_df['Class'].unique().tolist()
 
     def transform_iris(self):
         """
         """
-        pass
+        # We'll make a deep copy of our data set
+        temp_df = pd.DataFrame.copy(self.data, deep=True)
+
+        # Normalize Data
+        normalized_temp_df = (temp_df - temp_df.mean()) / temp_df.std()
+
+        # Set the class back
+        normalized_temp_df.drop(columns='Class', inplace=True)
+        normalized_temp_df['Class'] = temp_df['Class']
+
+        # Set attributes for ETL object
+        self.classes = 3
+        self.transformed_data = normalized_temp_df
+
+        # Class
+        self.class_names = temp_df['Class'].unique().tolist()
 
     def transform_soybean(self):
         """
         """
-        pass
+        # We'll make a deep copy of our data set
+        temp_df = pd.DataFrame.copy(self.data, deep=True)
+
+        # Normalize Data
+        normalized_temp_df = (temp_df - temp_df.mean()) / temp_df.std()
+
+        # Set attributes for ETL object
+        self.classes = 4
+        self.transformed_data = normalized_temp_df
+
+        # Class
+        self.class_names = temp_df['Class'].unique().tolist()
 
     def transform_vote(self):
         """
         """
-        pass
+        # We'll make a deep copy of our data set
+        temp_df = pd.DataFrame.copy(self.data, deep=True)
+
+        # Set the class back
+        temp_df.drop(columns='Class', inplace=True)
+        temp_df['Class'] = self.data['Class']
+
+        # Set attributes for ETL object
+        self.classes = 2
+        self.transformed_data = temp_df
+
+        # Class
+        self.class_names = temp_df['Class'].unique().tolist()
 
     def cv_split_classification(self):
         """
