@@ -79,12 +79,10 @@ class LogisticRegressor:
 
             if new_misclassification < misclassification:
                 misclassification = new_misclassification
-                print('learning cycle: ', i)
-                print(misclassification)
-                i += 1
+                print('learning cycle: ', i)  # remove
+                print(misclassification)  # remove
+                i += 1  # remove
             else:
-                print('stop')
-                print(misclassification)
+                print('stop')  # remove
+                print(misclassification)  # remove
                 break
-
-        pass
