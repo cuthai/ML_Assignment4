@@ -175,13 +175,14 @@ class ETL:
 
         # Set the class back, the normalize above would have normalized the class as well
         normalized_temp_df['Class'] = temp_df['Class']
+        normalized_temp_df['Class'] = 'C' + normalized_temp_df['Class'].astype(str)
 
         # Set attributes for ETL object
         self.classes = 6
         self.transformed_data = normalized_temp_df
 
         # Class
-        self.class_names = temp_df['Class'].unique().tolist()
+        self.class_names = normalized_temp_df['Class'].unique().tolist()
 
     def transform_iris(self):
         """
@@ -232,16 +233,25 @@ class ETL:
         # We'll make a deep copy of our data set
         temp_df = pd.DataFrame.copy(self.data, deep=True)
 
+        # Get dummies of the binned data
+        binned_df = pd.get_dummies(temp_df, columns=['Handicapped_Infants', 'Water_Project_Cost_Sharing',
+                                                     'Adoption_Budget_Resolution', 'Physician_Fee_Freeze',
+                                                     'El_Salvador_Aid', 'Religious_Groups_School',
+                                                     'Anti_Satellite_Test_Ban', 'Aid_Nicaraguan_Contras', 'MX_Missile',
+                                                     'Immigration', 'Synfuels_Corporation_Cutback', 'Education_Spending',
+                                                     'Superfund_Right_To_Sue', 'Crime', 'Duty_Free_Exports',
+                                                     'Export_Administration_Act_South_Africa'])
+
         # Set the class back
-        temp_df.drop(columns='Class', inplace=True)
-        temp_df['Class'] = self.data['Class']
+        binned_df.drop(columns='Class', inplace=True)
+        binned_df['Class'] = temp_df['Class']
 
         # Set attributes for ETL object
         self.classes = 2
-        self.transformed_data = temp_df
+        self.transformed_data = binned_df
 
         # Class
-        self.class_names = temp_df['Class'].unique().tolist()
+        self.class_names = binned_df['Class'].unique().tolist()
 
     def cv_split_classification(self):
         """
