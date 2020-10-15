@@ -1,5 +1,6 @@
 from utils.args import args
 from etl.etl import ETL
+from logistic_regression.logistic_regression import LogisticRegressor
 
 
 def main():
@@ -16,38 +17,22 @@ def main():
     }
     etl = ETL(**kwargs)
 
-    # Decision Tree
-    # Classification
-    if arguments.data_name in ['breast-cancer', 'car', 'segmentation']:
-        # Set up kwargs
-        kwargs = {
-            'etl': etl,
-            'prune': arguments.prune
-        }
-
-        dt_model = None
-    # Regression
-    else:
-        # Set up kwargs
-        kwargs = {
-            'etl': etl,
-            'percent_threshold': arguments.percent_threshold
-        }
-
-        dt_model = None
-
-        # Tune
-        if arguments.tune:
-            dt_model.tune()
+    # Set up kwargs and create object
+    kwargs = {
+        'etl': etl
+    }
+    model = LogisticRegressor(**kwargs)
 
     # Fit
-    dt_model.fit()
+    model.fit()
 
     # Predict
-    dt_model.predict()
+    # model.predict()
 
     # Summarize
-    dt_model.summarize()
+    # model.summarize()
+
+    pass
 
 
 if __name__ == '__main__':
