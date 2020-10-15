@@ -212,6 +212,13 @@ class ETL:
         # Normalize Data
         normalized_temp_df = (temp_df - temp_df.mean()) / temp_df.std()
 
+        # Set the class back
+        normalized_temp_df.drop(columns=['Class', 'Fruit_Spots', 'Leaf_Malf', 'Leaf_Mild', 'Leaf_Shread',
+                                         'Leaf_Spot_Size', 'Leaf_Spots_Halo', 'Leaf_Spots_Marg', 'Mold_Growth',
+                                         'Plant_Growth', 'Seed', 'Seed_Discolor', 'Seed_Size', 'Shriveling', 'Stem'],
+                                inplace=True)
+        normalized_temp_df['Class'] = temp_df['Class']
+
         # Set attributes for ETL object
         self.classes = 4
         self.transformed_data = normalized_temp_df
