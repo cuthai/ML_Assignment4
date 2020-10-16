@@ -19,7 +19,8 @@ def main():
 
     # Set up kwargs and create object
     kwargs = {
-        'etl': etl
+        'etl': etl,
+        'step_size': arguments.step_size
     }
     model = LogisticRegressor(**kwargs)
 
@@ -33,7 +34,7 @@ def main():
     model.predict()
 
     # Summarize
-    # model.summarize()
+    model.summarize()
 
     pass
 

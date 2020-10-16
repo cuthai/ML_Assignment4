@@ -1,12 +1,13 @@
 import numpy as np
 import pandas as pd
+import json
 
 
 class LogisticRegressor:
     """
     Class LogisticRegressor
     """
-    def __init__(self, etl):
+    def __init__(self, etl, step_size=.01):
         """
         Init function
 
@@ -21,7 +22,7 @@ class LogisticRegressor:
         self.classes = etl.classes
 
         # Tune Variables
-        self.step_size = .01
+        self.step_size = step_size
 
         # Data Variables
         self.tune_data = etl.tune_data
@@ -164,3 +165,32 @@ class LogisticRegressor:
             predictions[predictions == index] = self.class_names[index]
 
         return predictions
+
+    def summarize(self):
+        # Calculate misclassification
+        misclassification = sum([self.test_results[index]['misclassification'] for index in range(5)])
+
+        # Summary JSON
+        self.summary = {
+            'tune': {
+                'step_size': self.step_size
+            },
+            'test': {
+                'misclassification': misclassification / 5
+            }
+        }
+
+        # Output JSON
+        with open(f'output_{self.data_name}\\logistic_{self.data_name}_summary.json', 'w') as file:
+            json.dump(self.summary, file)
+
+        # Summary CSV
+        summary_classification = pd.DataFrame()
+
+        # Loop through each test data set and add the results
+        for index in range(5):
+            summary_classification = summary_classification.append(self.test_results[index]['results'])
+
+        # Dump CSV and save
+        summary_classification.to_csv(f'output_{self.data_name}\\logistic_{self.data_name}_classification.csv')
+        self.summary_classification = summary_classification

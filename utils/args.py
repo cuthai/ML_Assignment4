@@ -22,12 +22,8 @@ def args():
     parser.add_argument('-dn', '--data_name', help='Specify data name to extract and process')
     parser.add_argument('-rs', '--random_state', default=1, type=int,
                         help='Specify a seed to pass to the data splitter')
-    parser.add_argument('-p', '--prune', action='store_true',
-                        help='Trigger Prune on trained decision tree')
-    parser.add_argument('-t', '--tune', action='store_true',
-                        help='Trigger tune on CART decision tree')
-    parser.add_argument('-pt', '--percent_threshold', default=0, type=float,
-                        help='Specify percent_threshold for early stopping of tree')
+    parser.add_argument('-s', '--step_size', default=.01, type=float,
+                        help='Step_size to pass to logistic model gradient descent')
 
     # Parse arguments
     command_args = parser.parse_args()
