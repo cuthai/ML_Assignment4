@@ -37,7 +37,9 @@ class LogisticRegressor:
         self.train_models = {index: {} for index in range(5)}
 
         # Tune Results
-        self.tune_results = {index: {} for index in range(5)}
+        self.tune_results = {
+            round(step_size, 2): {} for step_size in np.linspace(.01, .25, 25)
+        }
 
         # Test Results
         self.test_results = {index: {} for index in range(5)}
@@ -46,16 +48,46 @@ class LogisticRegressor:
         self.summary = {}
         self.summary_classification = None
 
+    def tune(self):
+        step_sizes = self.tune_results.keys()
+
+        for step_size in step_sizes:
+            misclassification = 0
+
+            for index in range(5):
+                data = self.train_array_split[index]
+                weights, intercepts = self.train(data, step_size)
+
+                model = {
+                    'weights': weights,
+                    'intercepts': intercepts
+                }
+                predictions = self.classify(self.tune_array, model)
+
+                results = pd.DataFrame.copy(self.tune_data)
+                results['Prediction'] = predictions
+
+                misclassification += len(results[results['Class'] != results['Prediction']]) / len(results)
+
+            self.tune_results[step_size].update({
+                'misclassification': misclassification / 5
+            })
+
     def fit(self):
         for index in range(5):
-            weights, intercepts = self.train(self.train_array_split[index])
+            data = self.train_array_split[index]
+
+            weights, intercepts = self.train(data)
 
             self.train_models[index].update({
                 'weights': weights,
                 'intercepts': intercepts
             })
 
-    def train(self, data):
+    def train(self, data, step_size=None):
+        if not step_size:
+            step_size = self.step_size
+
         i = 1  # remove
 
         x = data[:, :-1].astype(float)
@@ -84,8 +116,8 @@ class LogisticRegressor:
 
                 predictions[predictions == index] = self.class_names[index]
 
-            weights = weights + (self.step_size * weights_delta)
-            intercepts = intercepts + (self.step_size * intercepts_delta)
+            weights = weights + (step_size * weights_delta)
+            intercepts = intercepts + (step_size * intercepts_delta)
 
             new_misclassification = sum(predictions != y) / len(y)
 
@@ -106,7 +138,7 @@ class LogisticRegressor:
             data = self.test_array_split[index]
             model = self.train_models[index]
 
-            predictions = self.test(data, model)
+            predictions = self.classify(data, model)
 
             results = pd.DataFrame.copy(self.test_split[index])
             results['Prediction'] = predictions
@@ -118,7 +150,7 @@ class LogisticRegressor:
                 'misclassification': misclassification
             })
 
-    def test(self, data, model):
+    def classify(self, data, model):
         x = data[:, :-1].astype(float)
 
         weights = model['weights']
