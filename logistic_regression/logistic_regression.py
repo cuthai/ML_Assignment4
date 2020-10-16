@@ -56,24 +56,30 @@ class LogisticRegressor:
         train_y = train_data[:, -1]
 
         weights = np.random.uniform(low=-.01, high=.01, size=(self.classes, train_x.shape[1]))
+        intercepts = np.zeros((self.classes, 1))
 
         misclassification = 1
 
         while True:
-            weights_delta = np.ndarray((self.classes, train_x.shape[1]))
-            outputs = np.matmul(train_x, weights.T)
-            likelihood = np.exp(outputs) / np.sum(np.exp(outputs), axis=1)[:, None]
+            weights_delta = np.zeros((self.classes, train_x.shape[1]))
+            intercepts_delta = np.zeros((self.classes, 1))
+
+            outputs = np.matmul(train_x, weights.T) + intercepts.T
+            likelihood = (np.exp(outputs) / np.sum(np.exp(outputs), axis=1)[:, None])
             predictions = np.argmax(likelihood, axis=1).astype('O')
 
             for index in range(self.classes):
                 current_class = self.class_names[index]
                 actuals = (train_y == current_class).astype(int)
+                difference = (actuals - likelihood[:, index])
 
-                weights_delta[index, :] = np.matmul((actuals - likelihood[:, index]), train_x)
+                weights_delta[index, :] = np.matmul(difference, train_x)
+                intercepts_delta[index, :] += sum(difference)
 
                 predictions[predictions == index] = self.class_names[index]
 
             weights = weights + (self.step_size * weights_delta)
+            intercepts = intercepts + (self.step_size * intercepts_delta)
 
             new_misclassification = sum(predictions != train_y) / len(train_y)
 
