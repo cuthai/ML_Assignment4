@@ -27,7 +27,7 @@ def main():
     model.fit()
 
     # Predict
-    # model.predict()
+    model.predict()
 
     # Summarize
     # model.summarize()
