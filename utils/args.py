@@ -24,6 +24,7 @@ def args():
                         help='Specify a seed to pass to the data splitter')
     parser.add_argument('-s', '--step_size', default=.01, type=float,
                         help='Step_size to pass to logistic model gradient descent')
+    parser.add_argument('-t', '--tune', action='store_true', help='Trigger tune')
 
     # Parse arguments
     command_args = parser.parse_args()

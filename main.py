@@ -25,7 +25,8 @@ def main():
     model = LogisticRegressor(**kwargs)
 
     # Tune
-    model.tune()
+    if arguments.tune:
+        model.tune()
 
     # Fit
     model.fit()

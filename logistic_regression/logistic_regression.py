@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import json
+import matplotlib.pyplot as plt
 
 
 class LogisticRegressor:
@@ -39,7 +40,7 @@ class LogisticRegressor:
 
         # Tune Results
         self.tune_results = {
-            round(step_size, 2): {} for step_size in np.linspace(.01, .25, 25)
+            round(step_size, 2): None for step_size in np.linspace(.01, .25, 25)
         }
 
         # Test Results
@@ -70,9 +71,9 @@ class LogisticRegressor:
 
                 misclassification += len(results[results['Class'] != results['Prediction']]) / len(results)
 
-            self.tune_results[step_size].update({
-                'misclassification': misclassification / 5
-            })
+            self.tune_results.update({step_size: misclassification / 5})
+
+        self.visualize()
 
     def fit(self):
         for index in range(5):
@@ -194,3 +195,32 @@ class LogisticRegressor:
         # Dump CSV and save
         summary_classification.to_csv(f'output_{self.data_name}\\logistic_{self.data_name}_classification.csv')
         self.summary_classification = summary_classification
+
+    def visualize(self):
+        """
+        Tune visualization function
+
+        This function uses the results of the tune function to create a plot graph
+
+        :return: matplotlib saved jpg in output folder
+        """
+        # Figure / axis set up
+        fig, ax = plt.subplots()
+
+        # We'll plot the list of params and their accuracy
+        ax.plot(self.tune_results.keys(), self.tune_results.values())
+
+        # Title
+        ax.set_title(rf'{self.data_name} Tune Results')
+
+        # X axis
+        ax.set_xlabel('Step_Size')
+        ax.set_xlim(0, .25)
+        ax.set_xticks(list(self.tune_results.keys()))
+        ax.set_xticklabels(list(self.tune_results.keys()), rotation=45, fontsize=6)
+
+        # Y axis
+        ax.set_ylabel('Misclassification')
+
+        # Saving
+        plt.savefig(f'output_{self.data_name}\\logistic_{self.data_name}_tune.jpg')
