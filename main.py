@@ -5,7 +5,7 @@ from logistic_regression.logistic_regression import LogisticRegressor
 
 def main():
     """
-    Main function to run Decision Tree Classifier/Regressor
+    Main function to run Logistic Regression/Adaline Regression
     """
     # Parse arguments
     arguments = args()

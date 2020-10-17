@@ -17,11 +17,10 @@ class ETL:
 
         :param data_name: str, name of the data file passed at the command line. Below are the valid names:
             breast-cancer
-            car
-            segmentation
-            abalone
-            machine (assignment name: computer hardware)
-            forest-fires
+            glass
+            iris
+            soybean
+            vote
         :param random_state: int, seed for data split
         """
         # Set the attributes to hold our data
@@ -132,7 +131,7 @@ class ETL:
         """
         Function to transform breast-cancer data set
 
-        For this function missing data points are removed
+        For this function missing data points are removed and data is normalized around 0
 
         :return self.transformed_data: DataFrame, transformed data set
         :return self.classes: int, num of classes
@@ -163,6 +162,12 @@ class ETL:
 
     def transform_glass(self):
         """
+        Function to transform glass data set
+
+        For this function data is normalized around 0
+
+        :return self.transformed_data: DataFrame, transformed data set
+        :return self.classes: int, num of classes
         """
         # We'll make a deep copy of our data set
         temp_df = pd.DataFrame.copy(self.data, deep=True)
@@ -186,6 +191,12 @@ class ETL:
 
     def transform_iris(self):
         """
+        Function to transform iris data set
+
+        For this function data is normalized around 0
+
+        :return self.transformed_data: DataFrame, transformed data set
+        :return self.classes: int, num of classes
         """
         # We'll make a deep copy of our data set
         temp_df = pd.DataFrame.copy(self.data, deep=True)
@@ -206,6 +217,12 @@ class ETL:
 
     def transform_soybean(self):
         """
+        Function to transform soybean data set
+
+        For this function data is normalized around 0
+
+        :return self.transformed_data: DataFrame, transformed data set
+        :return self.classes: int, num of classes
         """
         # We'll make a deep copy of our data set
         temp_df = pd.DataFrame.copy(self.data, deep=True)
@@ -229,6 +246,12 @@ class ETL:
 
     def transform_vote(self):
         """
+        Function to transform vote data set
+
+        For this function data is binned into categorical variables
+
+        :return self.transformed_data: DataFrame, transformed data set
+        :return self.classes: int, num of classes
         """
         # We'll make a deep copy of our data set
         temp_df = pd.DataFrame.copy(self.data, deep=True)

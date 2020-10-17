@@ -9,11 +9,9 @@ def args():
         -dn <str> (data_name) name of the data to import form the data folder
             they are: breast-cancer, car, segmentation, abalone, machine, forest-fires
         -rs <int> (random_seed) seed used for data split. Defaults to 1. All submitted output uses random_seed 1
-        -p (prune) Trigger prune for classification tree. Does nothing for regressor
         -t (tune) Trigger tune for regression tree. Does nothing for classifier. This does not set thresholds, only
             output tune results
-        -pt <float> (percent_threshold) Add a specific percentage threshold for early stopping on regressor. Does
-            nothing for classifier
+        -s <float> (step_size) Step_size for gradient descent
     """
     # Initialize the parser
     parser = argparse.ArgumentParser()
