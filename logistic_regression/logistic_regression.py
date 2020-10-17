@@ -90,8 +90,6 @@ class LogisticRegressor:
         if not step_size:
             step_size = self.step_size
 
-        i = 1  # remove
-
         x = data[:, :-1].astype(float)
         y = data[:, -1]
 
@@ -125,12 +123,7 @@ class LogisticRegressor:
 
             if new_misclassification < misclassification:
                 misclassification = new_misclassification
-                print('learning cycle: ', i)  # remove
-                print(misclassification)  # remove
-                i += 1  # remove
             else:
-                print('stop')  # remove
-                print(misclassification)  # remove
                 break
 
         return weights, intercepts
