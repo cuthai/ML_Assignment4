@@ -1,1 +1,1 @@
-{"tune": {"step_size": 0.02}, "test": {"misclassification": 0.3684210526315789}}
+{"tune": {"step_size": 0.01}, "test": {"misclassification": 0.38394062078272606}}
