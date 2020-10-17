@@ -1,6 +1,7 @@
 from utils.args import args
 from etl.etl import ETL
 from logistic_regression.logistic_regression import LogisticRegressor
+from adaline_regression.adaline_regression import AdalineRegressor
 
 
 def main():
@@ -22,7 +23,10 @@ def main():
         'etl': etl,
         'step_size': arguments.step_size
     }
-    model = LogisticRegressor(**kwargs)
+    if arguments.adaline:
+        model = AdalineRegressor(**kwargs)
+    else:
+        model = LogisticRegressor(**kwargs)
 
     # Tune
     if arguments.tune:
