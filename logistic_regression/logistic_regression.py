@@ -209,13 +209,13 @@ class LogisticRegressor:
             if new_misclassification < misclassification:
                 misclassification = new_misclassification
 
+                # Update weights and intercepts with deltas
+                weights = weights + (step_size * weights_delta)
+                intercepts = intercepts + (step_size * intercepts_delta)
+
             # If misclassification did not change between new and old, stop and break from while loop
             else:
                 break
-
-            # Update weights and intercepts with deltas
-            weights = weights + (step_size * weights_delta)
-            intercepts = intercepts + (step_size * intercepts_delta)
 
         # Return final weights and intercepts
         return weights, intercepts
