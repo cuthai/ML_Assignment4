@@ -41,7 +41,7 @@ class AdalineRegressor:
 
         # Tune Results
         self.tune_results = {
-            round(step_size, 2): None for step_size in np.linspace(.01, .25, 25)
+            round(step_size, 4): None for step_size in np.linspace(.0001, .0025, 25)
         }
 
         # Test Results
@@ -70,12 +70,11 @@ class AdalineRegressor:
             for index in range(5):
                 # Gather variables, weights and intercepts come from the training
                 data = self.train_array_split[index]
-                weights, intercepts = self.train(data, step_size)
+                weights = self.train(data, step_size)
 
                 # Classify using our model and tune data set
                 model = {
-                    'weights': weights,
-                    'intercepts': intercepts
+                    'weights': weights
                 }
                 predictions = self.classify(self.tune_array, model)
 
@@ -111,7 +110,7 @@ class AdalineRegressor:
 
         # X axis
         ax.set_xlabel('Step_Size')
-        ax.set_xlim(0, .25)
+        ax.set_xlim(0, .0025)
         ax.set_xticks(list(self.tune_results.keys()))
         ax.set_xticklabels(list(self.tune_results.keys()), rotation=45, fontsize=6)
 
@@ -119,7 +118,7 @@ class AdalineRegressor:
         ax.set_ylabel('Misclassification')
 
         # Saving
-        plt.savefig(f'output_{self.data_name}\\logistic_{self.data_name}_tune.jpg')
+        plt.savefig(f'output_{self.data_name}\\adaline_{self.data_name}_tune.jpg')
 
     def fit(self):
         """
@@ -134,12 +133,11 @@ class AdalineRegressor:
             data = self.train_array_split[index]
 
             # Train
-            weights, intercepts = self.train(data)
+            weights = self.train(data)
 
             # Set model
             self.train_models[index].update({
-                'weights': weights,
-                'intercepts': intercepts
+                'weights': weights
             })
 
     def train(self, data, step_size=None):
@@ -161,11 +159,11 @@ class AdalineRegressor:
 
         # Assign X and Y
         x = data[:, :-1].astype(float)
+        x = np.insert(x, x.shape[1], 1, axis=1)
         y = data[:, -1]
 
         # Initial weight and intercept variables. Rows = classes, columns = dimensions
-        weights = np.random.uniform(low=-.01, high=.01, size=(self.classes, x.shape[1]))
-        intercepts = np.zeros((self.classes, 1))
+        weights = np.zeros((self.classes, x.shape[1]))
 
         # Initial misclassification
         misclassification = 1
@@ -174,27 +172,25 @@ class AdalineRegressor:
         while True:
             # Initial delta variables, all set to 0
             weights_delta = np.zeros((self.classes, x.shape[1]))
-            intercepts_delta = np.zeros((self.classes, 1))
 
             # Grab outputs, likelihoods, and make predictions on the current weights and intercepts
             # The likelihood calculation uses a softmax
-            outputs = np.matmul(x, weights.T) + intercepts.T
-            likelihood = (np.exp(outputs) / np.sum(np.exp(outputs), axis=1)[:, None])
-            predictions = np.argmax(likelihood, axis=1).astype('O')
+            outputs = np.matmul(x, weights.T)
+            predictions = np.argmax(outputs, axis=1).astype('O')
 
             # For each class, we will calculate the changes to delta
             for index in range(self.classes):
                 # For this current class, calculate the difference between actual and the softmax likelihood
                 current_class = self.class_names[index]
                 actuals = (y == current_class).astype(int)
-                difference = (actuals - likelihood[:, index])
-
-                # Update the deltas for this class
-                weights_delta[index, :] = np.matmul(difference, x)
-                intercepts_delta[index, :] += sum(difference)
 
                 # Update the predictions with class names
                 predictions[predictions == index] = self.class_names[index]
+
+                difference = (actuals - outputs[:, index])
+
+                # Update the deltas for this class
+                weights_delta[index, :] = np.matmul(difference, x)
 
             # Calculate new misclassification
             new_misclassification = sum(predictions != y) / len(y)
@@ -203,16 +199,15 @@ class AdalineRegressor:
             if new_misclassification < misclassification:
                 misclassification = new_misclassification
 
+                # Update weights and intercepts with deltas
+                weights = weights + (step_size * weights_delta)
+
             # If misclassification did not change between new and old, stop and break from while loop
             else:
                 break
 
-            # Update weights and intercepts with deltas
-            weights = weights + (step_size * weights_delta)
-            intercepts = intercepts + (step_size * intercepts_delta)
-
         # Return final weights and intercepts
-        return weights, intercepts
+        return weights
 
     def predict(self):
         """
@@ -256,16 +251,15 @@ class AdalineRegressor:
         """
         # Assign data
         x = data[:, :-1].astype(float)
+        x = np.insert(x, x.shape[1], 1, axis=1)
 
         # Assign model variables
         weights = model['weights']
-        intercepts = model['intercepts']
 
         # Grab outputs, likelihoods, and make predictions on the current weights and intercepts
         # The likelihood calculation uses a softmax
-        outputs = np.matmul(x, weights.T) + intercepts.T
-        likelihood = (np.exp(outputs) / np.sum(np.exp(outputs), axis=1)[:, None])
-        predictions = np.argmax(likelihood, axis=1).astype('O')
+        outputs = np.matmul(x, weights.T)
+        predictions = np.argmax(outputs, axis=1).astype('O')
 
         # For each class, make a prediction using the index of the highest softmax likelihood
         for index in range(self.classes):
@@ -298,7 +292,7 @@ class AdalineRegressor:
         }
 
         # Output JSON
-        with open(f'output_{self.data_name}\\logistic_{self.data_name}_summary.json', 'w') as file:
+        with open(f'output_{self.data_name}\\adaline_{self.data_name}_summary.json', 'w') as file:
             json.dump(self.summary, file)
 
         # Summary CSV
@@ -309,5 +303,5 @@ class AdalineRegressor:
             summary_classification = summary_classification.append(self.test_results[index]['results'])
 
         # Dump CSV and save
-        summary_classification.to_csv(f'output_{self.data_name}\\logistic_{self.data_name}_classification.csv')
+        summary_classification.to_csv(f'output_{self.data_name}\\adaline_{self.data_name}_classification.csv')
         self.summary_classification = summary_classification
