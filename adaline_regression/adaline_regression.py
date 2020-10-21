@@ -7,6 +7,12 @@ import matplotlib.pyplot as plt
 class AdalineRegressor:
     """
     Class AdalineRegressor
+
+    This class implements a adaline regression which splits the classes using an adaline discriminant and neural
+        network. Weights for determining class splits are learned using gradient descent. The class with the highest
+        neuron is the predicted class. Functions implemented are Tune, Fit, Predict, and Summarize. The tune function
+        is optional and outputs results for various step sizes. To run a Fit on a desired step size add the command line
+        argument <-s float> when running main.
     """
     def __init__(self, etl, step_size=.01):
         """
@@ -170,23 +176,23 @@ class AdalineRegressor:
 
         # Use a while loop, we'll break out with a comparison later
         while True:
-            # Initial delta variables, all set to 0
+            # Initial delta variable, set to 0
             weights_delta = np.zeros((self.classes, x.shape[1]))
 
-            # Grab outputs, likelihoods, and make predictions on the current weights and intercepts
-            # The likelihood calculation uses a softmax
+            # Grab outputs and make predictions on the current weights and intercepts
             outputs = np.matmul(x, weights.T)
             predictions = np.argmax(outputs, axis=1).astype('O')
 
             # For each class, we will calculate the changes to delta
             for index in range(self.classes):
-                # For this current class, calculate the difference between actual and the softmax likelihood
+                # For this current class, calculate the difference between actual and the neuron
                 current_class = self.class_names[index]
                 actuals = (y == current_class).astype(int)
 
                 # Update the predictions with class names
                 predictions[predictions == index] = self.class_names[index]
 
+                # Calculate differences
                 difference = (actuals - outputs[:, index])
 
                 # Update the deltas for this class
@@ -206,7 +212,7 @@ class AdalineRegressor:
             else:
                 break
 
-        # Return final weights and intercepts
+        # Return final weights
         return weights
 
     def predict(self):
@@ -242,8 +248,8 @@ class AdalineRegressor:
         """
         Classify Function
 
-        This function takes data and then calculates the softmax likelihood using the weights of the model. The highest
-            likelihood is the assigned class
+        This function takes data and then calculates the neuron using the weights of the model. The highest neuron is
+            the assigned class
 
         :param data: np.array, data to train on
         :param model: dict, dictionary of out model with weights and intercepts
@@ -256,12 +262,11 @@ class AdalineRegressor:
         # Assign model variables
         weights = model['weights']
 
-        # Grab outputs, likelihoods, and make predictions on the current weights and intercepts
-        # The likelihood calculation uses a softmax
+        # Grab outputs and make predictions on the current weights
         outputs = np.matmul(x, weights.T)
         predictions = np.argmax(outputs, axis=1).astype('O')
 
-        # For each class, make a prediction using the index of the highest softmax likelihood
+        # For each class, make a prediction using the index of the highest neuron
         for index in range(self.classes):
             predictions[predictions == index] = self.class_names[index]
 
