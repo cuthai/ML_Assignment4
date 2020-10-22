@@ -1,24 +1,23 @@
 Usage
-	python main.py -dn <str> [-p] [-t] [-pt <float>]
+	python main.py -dn <str> [-rs <int>] [-s <float>] [-t] [-a]
 
 Args:
 	-dn <str>
 	Required, specifies the name of the data. Please use:
 		breast-cancer
-		car
-        	segmentation
-		abalone (note: this + -t is very time consuming)
-		forest-fires
-		machine
+		glass
+		iris
+        soybean
+		vote
 
 	-rs <int>
 	Optional, specifies the random_state of the data for splitting. Defaults to 1
 
-	-p
-	Optional, specifies pruning on classification datasets (works on breast-cancer, car, segmentation)
+	-s
+	Optional, specifies step_size to use in gradient descent for both regressions
 
-    	-t
-	Optional, specifies tuning on regression datasets (works on abalone, forest-fires, machine)
+    -t
+	Optional, specifies tuning, does not set the step_size but outputs a graph, use -s to specify step_size
 
-	-pt
-	Optional, specifies a percent_threshold to use as early stopping criteria on regression datasets (works on abalone, forest-fires, machine)
+	-a
+	Optional, specifies adaline regression. default: logistic
