@@ -188,6 +188,7 @@ class AdalineRegressor:
                 # For this current class, calculate the difference between actual and the neuron
                 current_class = self.class_names[index]
                 actuals = (y == current_class).astype(int)
+                actuals = np.where(actuals == 0, -1, 1)
 
                 # Update the predictions with class names
                 predictions[predictions == index] = self.class_names[index]
